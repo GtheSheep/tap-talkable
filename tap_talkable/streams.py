@@ -83,6 +83,8 @@ class CampaignMetricsStream(TalkableStream):
     ignore_parent_replication_keys = True
     path = "/metrics/{metric}/detalize/"
     records_jsonpath = "$.result.detalized[*]"
+    primary_keys = ["campaign_id", "metric", "start_date"]
+    replication_key = "start_date"
 
     schema = th.PropertiesList(
         th.Property("campaign_id", th.NumberType),
@@ -91,6 +93,8 @@ class CampaignMetricsStream(TalkableStream):
         th.Property("formatted", th.StringType),
         th.Property("result_type", th.StringType),
         th.Property("period", th.StringType),
+        th.Property("start_date", th.DateTimeType),
+        th.Property("end_date", th.DateTimeType),
     ).to_dict()
 
     def get_url_params(
