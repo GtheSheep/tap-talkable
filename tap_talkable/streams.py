@@ -1,15 +1,13 @@
 """Stream type classes for tap-talkable."""
 
-import copy
 import datetime
-from pathlib import Path
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
-from typing import Any, Dict, Optional, Union, List, Iterable
+from typing import Any, Dict, Optional
 
 import pendulum
 import requests
-from singer_sdk.helpers.jsonpath import extract_jsonpath
+from singer_sdk.exceptions import FatalAPIError, RetriableAPIError
 from singer_sdk import typing as th  # JSON Schema typing helpers
 
 from tap_talkable.client import TalkableStream
@@ -83,8 +81,9 @@ class CampaignMetricsStream(TalkableStream):
     ignore_parent_replication_keys = True
     path = "/metrics/{metric}/detalize/"
     records_jsonpath = "$.result.detalized[*]"
-    primary_keys = ["campaign_id", "metric", "start_date"]
-    replication_key = "start_date"
+    primary_keys = ["campaign_id", "metric", "date"]
+    replication_key = "date"
+    partitions = [{"metric": metric} for metric in METRICS]
 
     schema = th.PropertiesList(
         th.Property("campaign_id", th.NumberType),
@@ -93,9 +92,12 @@ class CampaignMetricsStream(TalkableStream):
         th.Property("formatted", th.StringType),
         th.Property("result_type", th.StringType),
         th.Property("period", th.StringType),
-        th.Property("start_date", th.DateTimeType),
-        th.Property("end_date", th.DateTimeType),
+        th.Property("date", th.DateTimeType),
     ).to_dict()
+
+    def post_process(self, row: dict, context: Optional[dict] = None) -> Optional[dict]:
+        row["date"] = datetime.datetime.strptime(row["period"].split(' ')[0], "%m/%d/%y")
+        return row
 
     def get_url_params(
         self, context: Optional[dict], next_page_token: Optional[Any]
@@ -105,14 +107,15 @@ class CampaignMetricsStream(TalkableStream):
         else:
             start_date = next_page_token
         yesterday = datetime.datetime.now(tz=start_date.tzinfo) - datetime.timedelta(days=1)
+        end_date = min(start_date + datetime.timedelta(days=100), yesterday)
+        start_date = start_date.strftime("%Y-%m-%d")
+        end_date = end_date.strftime("%Y-%m-%d")
         return {
             "site_slug": self.config["site_slug"],
             "campaign_ids": [context["campaign_id"]],
-            "start_date": start_date.strftime("%Y-%m-%d"),
-            "end_date": (
-                min(start_date + datetime.timedelta(days=100), yesterday)
-            ).strftime("%Y-%m-%d"),
-            'detalize_by[period]': 'day',
+            "start_date": start_date,
+            "end_date": end_date,
+            "detalize_by[period]": "day",
         }
 
     def get_next_page_token(
@@ -132,31 +135,25 @@ class CampaignMetricsStream(TalkableStream):
             next_page_token = None
         return next_page_token
 
-    def request_records(self, context: Optional[dict]) -> Iterable[dict]:
-        for metric in METRICS:
-            context["metric"] = metric
-            next_page_token: Any = None
-            finished = False
-            decorated_request = self.request_decorator(self._request)
-
-            while not finished:
-                prepared_request = self.prepare_request(
-                    context, next_page_token=next_page_token
-                )
-                resp = decorated_request(prepared_request, context)
-                for row in self.parse_response(resp):
-                    yield row
-                previous_token = copy.deepcopy(next_page_token)
-                next_page_token = self.get_next_page_token(
-                    response=resp, previous_token=previous_token
-                )
-                if next_page_token and next_page_token == previous_token:
-                    raise RuntimeError(
-                        f"Loop detected in pagination. "
-                        f"Pagination token {next_page_token} is identical to prior token."
-                    )
-                # Cycle until get_next_page_token() no longer returns a value
-                finished = not next_page_token
+    def validate_response(self, response: requests.Response) -> None:
+        if response.status_code == 429:
+            msg = (
+                f"{response.status_code} Server Error: "
+                f"{response.reason} for path: {self.path}"
+            )
+            raise RetriableAPIError(msg)
+        elif 400 <= response.status_code < 500:
+            msg = (
+                f"{response.status_code} Client Error: "
+                f"{response.reason} for path: {self.path}"
+            )
+            raise FatalAPIError(msg)
+        elif 500 <= response.status_code < 600:
+            msg = (
+                f"{response.status_code} Server Error: "
+                f"{response.reason} for path: {self.path}"
+            )
+            raise RetriableAPIError(msg)
 
 
 class TrafficSourcesStream(TalkableStream):
