@@ -77,7 +77,7 @@ PREDEFINED_METRICS = [
     'ideal_sales_count', 'ideal_sales_sum', 'dashboard_sales_count', 'dashboard_sales_sum'  # Talkable Sales
 ]
 
-METRICS = MATH_METRICS + FRIEND_SALES_METRICS + ADVOCATE_SALES_METRICS + PREDEFINED_METRICS
+METRICS = ['offers', 'clicks'] #MATH_METRICS + FRIEND_SALES_METRICS + ADVOCATE_SALES_METRICS + PREDEFINED_METRICS
 
 
 class CampaignMetricsStream(TalkableStream):
@@ -87,6 +87,7 @@ class CampaignMetricsStream(TalkableStream):
     path = "/metrics/{metric}/detalize/"
     records_jsonpath = "$.result.detalized[*]"
     primary_keys = ["campaign_id", "metric", "date"]
+    state_partitioning_keys = ["campaign_id", "metric"]
     replication_key = "date"
     partitions = [{"metric": metric} for metric in METRICS]
 
