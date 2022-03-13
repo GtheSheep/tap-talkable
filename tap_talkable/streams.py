@@ -69,7 +69,12 @@ PREDEFINED_METRICS = [
     'offers',
     'clicks', 'clicks_unique', 'first_time_clicks', 'visits', 'visits_unique', 'first_time_visits', 'email_gated', 'emails_collected_on_claim', 'email_gated_and_opted_in', 'email_gated_and_opted_in_new',  # Claiming
     'customers', 'new_customers', 'visited_referrals',  # Customers
-    'total_first_time_sales_count', 'total_first_time_sales_sum'  # Email capture
+    'total_first_time_sales_count', 'total_first_time_sales_sum',  # Email capture
+    'total_sales_count', 'total_sales_sum', 'total_sales_with_curebit_coupon_count', 'total_sales_with_curebit_coupon_sum', 'total_sales_with_talkable_ad_coupon_count', 'total_sales_with_talkable_ad_coupon_sum', 'total_sales_with_talkable_fr_coupon_count', 'total_sales_with_talkable_fr_coupon_sum', 'lift_in_sales', 'refunded_sales_count', 'refunded_sales_sum',  # Overall sales
+    'total_rewards_count', 'total_rewards_sum', 'ad_rewards_count', 'ad_rewards_sum', 'fr_rewards_count', 'fr_rewards_sum', 'advocate_loyalty_referral_rewards_count', 'advocate_loyalty_referral_rewards_sum', 'advocate_loyalty_referral_rewards_points', 'advocate_referral_rewards_used_count', 'friend_reward_paid_email_delivered', 'friend_reward_paid_email_opened', 'friend_reward_paid_email_clicked', 'advocate_reward_paid_email_delivered', 'advocate_reward_paid_email_opened', 'advocate_reward_paid_email_clicked', 'advocate_referral_rewards_paid_and_pending_count', 'advocate_referral_rewards_paid_count', # Rewards
+    'offer_shown', 'sharers', 'shares', 'multisharers', 'share_emails_sent', 'share_emails_delivered', 'share_emails_opened', 'share_emails_clicked', # Sharing
+    'signup_shown', 'sign_up', 'sign_up_and_opted_in', 'sign_up_and_opted_in_new', 'emails_collected_on_signup', 'people', 'advocate_offer_email_delivered', 'advocate_offer_email_opened', 'advocate_offer_email_clicked',  # Sign Up
+    'ideal_sales_count', 'ideal_sales_sum', 'dashboard_sales_count', 'dashboard_sales_sum'  # Talkable Sales
 ]
 
 METRICS = MATH_METRICS + FRIEND_SALES_METRICS + ADVOCATE_SALES_METRICS + PREDEFINED_METRICS
