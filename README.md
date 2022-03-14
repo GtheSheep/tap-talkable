@@ -6,17 +6,19 @@ Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 
 ## Installation
 
-- [ ] `Developer TODO:` Update the below as needed to correctly describe the install procedure. For instance, if you do not have a PyPi repo, or if you want users to directly install from your git repo, you can modify this step as appropriate.
-
 ```bash
-pipx install tap-talkable
+pipx install git+https://github.com/gthesheep/tap-talkable
 ```
 
 ## Configuration
 
 ### Accepted Config Options
 
-- [ ] `Developer TODO:` Provide a list of config options accepted by the tap.
+`api_key` - Authentication key obtained from Talkable Account Settings.
+`site_slug` - The slug for your site.
+`start_date` - Timestamp for when to collect metrics from, default is `2019-01-01T00:00:00Z`.
+
+Metrics descriptions can be found using this URL pattern: https://admin.talkable.com/account/<account_id>/metrics
 
 A full list of supported settings and capabilities for this
 tap is available by running:
@@ -27,7 +29,7 @@ tap-talkable --about
 
 ### Source Authentication and Authorization
 
-- [ ] `Developer TODO:` If your tap requires special access on the source system, or any special authentication requirements, provide those here.
+See [source docs](https://docs.talkable.com/api_v2/intro.html#authentication)
 
 ## Usage
 
@@ -42,8 +44,6 @@ tap-talkable --config CONFIG --discover > ./catalog.json
 ```
 
 ## Developer Resources
-
-- [ ] `Developer TODO:` As a first step, scan the entire project for the text "`TODO:`" and complete any recommended steps, deleting the "TODO" references once completed.
 
 ### Initialize your Development Environment
 
