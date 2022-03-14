@@ -14,9 +14,9 @@ pipx install git+https://github.com/gthesheep/tap-talkable
 
 ### Accepted Config Options
 
-`api_key` - Authentication key obtained from Talkable Account Settings.
-`site_slug` - The slug for your site.
-`start_date` - Timestamp for when to collect metrics from, default is `2019-01-01T00:00:00Z`.
+`api_key` - Authentication key obtained from Talkable Account Settings.  
+`site_slug` - The slug for your site.  
+`start_date` - Timestamp for when to collect metrics from, default is `2019-01-01T00:00:00Z`.  
 
 Metrics descriptions can be found using this URL pattern: https://admin.talkable.com/account/<account_id>/metrics
 
