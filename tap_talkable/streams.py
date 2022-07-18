@@ -77,7 +77,7 @@ PREDEFINED_METRICS = [
     'ideal_sales_count', 'ideal_sales_sum', 'dashboard_sales_count', 'dashboard_sales_sum'  # Talkable Sales
 ]
 
-METRICS = ['offers', 'clicks'] #MATH_METRICS + FRIEND_SALES_METRICS + ADVOCATE_SALES_METRICS + PREDEFINED_METRICS
+METRICS = MATH_METRICS + FRIEND_SALES_METRICS + ADVOCATE_SALES_METRICS + PREDEFINED_METRICS
 
 
 class CampaignMetricsStream(TalkableStream):
