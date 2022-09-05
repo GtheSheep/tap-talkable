@@ -84,8 +84,8 @@ class CampaignMetricsStream(TalkableStream):
     name = "campaign_metrics"
     parent_stream_type = CampaignsStream
     ignore_parent_replication_keys = True
-    path = "/metrics/{metric}/detalize/"
-    records_jsonpath = "$.result.detalized[*]"
+    path = "/metrics/{metric}/segmentize/"
+    records_jsonpath = "$.result.segmented[*]"
     primary_keys = ["campaign_id", "metric", "date"]
     state_partitioning_keys = ["campaign_id", "metric"]
     replication_key = "date"
@@ -121,7 +121,7 @@ class CampaignMetricsStream(TalkableStream):
             "campaign_ids": [context["campaign_id"]],
             "start_date": start_date,
             "end_date": end_date,
-            "detalize_by[period]": "day",
+            "segment_by[period]": "day",
         }
 
     def get_next_page_token(
